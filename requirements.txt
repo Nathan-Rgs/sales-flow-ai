@@ -5,3 +5,8 @@ tabulate
 docling
 gradio
 langchain-community
+langchain-chroma
+langchain-ollama
+scikit-learn
+plotly
+nbformat
