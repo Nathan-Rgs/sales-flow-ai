@@ -1,0 +1,7 @@
+pandas
+PyPDF2
+python-docx
+tabulate
+docling
+gradio
+langchain-community
