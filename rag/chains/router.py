@@ -20,7 +20,6 @@ Classifique a mensagem em exatamente uma destas categorias:
 - price
 - info
 - smalltalk
-- chat
 
 Retorne apenas a etiqueta (em caixa baixa).
 
