@@ -1,3 +1,5 @@
 venv
 knowledge-base
 studies
+__pycache__
+*.pyc

@@ -11,3 +11,6 @@ scikit-learn
 plotly
 nbformat
 pymupdf
+langgraph
+unstructured
+markdown
