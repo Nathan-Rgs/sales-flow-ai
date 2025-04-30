@@ -1,16 +1,10 @@
-pandas
+# Environment
+python-decouple==3.8
+
+# Modules
 PyPDF2
 python-docx
-tabulate
-docling
 gradio
 langchain-community
 langchain-chroma
 langchain-ollama
-scikit-learn
-plotly
-nbformat
-pymupdf
-langgraph
-unstructured
-markdown
