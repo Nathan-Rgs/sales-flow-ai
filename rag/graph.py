@@ -1,27 +1,51 @@
 # graph.py
 
-from chains.router     import router
+from chains.router     import router_chain
 from chains.price      import price_chain
 from chains.info       import info_chain
 from chains.smalltalk  import smalltalk_chain
 
-async def route_and_generate(user_message: str, history: list) -> str:
-    chat_history = [(m["role"], m["content"]) for m in history or []]
+# Configuração de cada intent
+_dispatch_map = {
+    "price": {
+        "chain": price_chain,
+        "input_key": "question",
+    },
+    "info": {
+        "chain": info_chain,
+        "input_key": "question",
+    },
+    "smalltalk": {
+        "chain": smalltalk_chain,
+        "input_key": "input",
+    },
+}
 
-    # get the router’s reply
-    router_msg = await router.ainvoke(input=user_message)
-    tag = router_msg.content.strip().lower()
-    print(f"Intenção: {tag}")
+async def route_and_generate(user_message: str) -> str:
+    # 1) Detecta a intenção utilizando o método ainvoke
+    router_result = await router_chain.ainvoke({"input": user_message})
+    intent = router_result.get("text", "").strip().lower()
+    print(f"[router] Intenção detectada: {intent}")
 
-    if tag == "price":
-        return await price_chain.ainvoke(
-            input=user_message,
-            chat_history=chat_history
-        )
-    elif tag == "info":
-        return await info_chain.ainvoke(
-            input=user_message,
-            chat_history=chat_history
-        )
-    elif tag == "smalltalk":
-        return await smalltalk_chain.ainvoke(input=user_message)
+    cfg = _dispatch_map.get(intent)
+    if not cfg:
+        return "Desculpe, não entendi sua intenção."
+
+    chain = cfg["chain"]
+    key = cfg["input_key"]
+
+    # 2) Executa sempre com ainvoke
+    result = await chain.ainvoke({key: user_message})
+
+    # 3) Se vier dict, trata specially a info_chain
+    if isinstance(result, dict):
+        if "answer" in result:
+            # log de fontes
+            for doc in result.get("source_documents", []):
+                print("Fonte:", doc.metadata.get("source", "<sem source>"))
+            return result["answer"]
+        # para price_chain e smalltalk_chain (LLMChain), usa a chave padrão 'text'
+        return result.get("text", next(iter(result.values())))
+
+    # 4) Fallback: se não for dict, retorna como string
+    return str(result)

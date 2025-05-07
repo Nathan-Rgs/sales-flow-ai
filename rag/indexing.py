@@ -6,7 +6,7 @@ import shutil
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from config import (
+from constants import (
     EMBEDDINGS_MODEL,
     OLLAMA_URL,
     PERSIST_DIR,

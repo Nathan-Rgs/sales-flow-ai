@@ -1,13 +1,40 @@
 from langchain_ollama import ChatOllama
-from langchain.chains import LLMChain
-from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
-from config import LLM_MODEL, OLLAMA_URL, GENERIC_SYSTEM_PROMPT
+from langchain.chains import ConversationChain
+from langchain.prompts import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+from langchain.memory import ConversationBufferMemory
+from constants import LLM_MODEL, OLLAMA_URL, GENERIC_SYSTEM_PROMPT
 
-llm = ChatOllama(model=LLM_MODEL, base_url=OLLAMA_URL, temperature=0.0, streaming=False)
+# 1) LLM com temperatura um pouco mais alta para smalltalk
+smalltalk_llm = ChatOllama(
+    model=LLM_MODEL,
+    base_url=OLLAMA_URL,
+    temperature=0.7,    # respostas mais “soltas” e naturais
+    streaming=False,
+)
 
+# 2) Memória simples para manter o contexto da conversa
+smalltalk_memory = ConversationBufferMemory(
+    memory_key="chat_history",
+    return_messages=True,
+)
+
+# 3) Prompt “chat” enxuto para smalltalk
 smalltalk_prompt = ChatPromptTemplate.from_messages([
     SystemMessagePromptTemplate.from_template(GENERIC_SYSTEM_PROMPT),
-    HumanMessagePromptTemplate.from_template("Usuário: {input}")
+    HumanMessagePromptTemplate.from_template(
+        "Histórico da conversa:\n{chat_history}\n\n"
+        "Seja amigável e descontraído quando o usuário quiser apenas bater papo."
+        "Usuário: {input}\n"
+    ),
 ])
 
-smalltalk_chain = LLMChain(llm=llm, prompt=smalltalk_prompt)
+# 4) Cadeia de conversação que usa memória
+smalltalk_chain = ConversationChain(
+    llm=smalltalk_llm,
+    prompt=smalltalk_prompt,
+    memory=smalltalk_memory,
+)
