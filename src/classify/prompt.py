@@ -26,5 +26,5 @@ class ClassifyPrompter():
         return self.templater
 
     def __get_tags(self) -> List[str]:
-        tags: str = config('tags')
+        tags: str = config('TAGS')
         return tags.lower().split(sep=', ')
