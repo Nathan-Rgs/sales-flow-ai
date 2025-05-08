@@ -1,7 +1,7 @@
-from classify.model import ClassifyModelFactory
+from model.factory import ModelFactory
 from classify.prompt import ClassifyPrompter
 from langchain_core.runnables.base import RunnableSerializable
-from typing import Any, List
+from typing import Any
 
 class ClassifyController():
     __classify_prompter: ClassifyPrompter
@@ -9,7 +9,7 @@ class ClassifyController():
 
     def __init__(self):
         self.__classify_prompter = ClassifyPrompter()
-        self.__chain: RunnableSerializable = self.__classify_prompter.get_templater() | ClassifyModelFactory.connect_factory(temperature=0.0)
+        self.__chain: RunnableSerializable = self.__classify_prompter.get_templater() | ModelFactory.connect_factory(temperature=0.0)
 
     async def get_response(self, input: str) ->  str:
         result = await self.__chain.ainvoke(input=input)
