@@ -4,11 +4,11 @@ from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
 from interface.model import ModelInterface
 
-class ClassifyModelFactory(ModelInterface):
+class ModelFactory(ModelInterface):
 
     @classmethod
     def connect_factory(cls, temperature: float) -> BaseChatModel:
-        return ClassifyModelFactory.__connect_cloud_gpt(temperature=temperature)
+        return ModelFactory.__connect_cloud_gpt(temperature=temperature)
 
     @classmethod
     def __connect_local_ollama(cls, temperature: float) -> ChatOllama:
