@@ -5,27 +5,17 @@ from langchain_core.prompts import (
     MessagesPlaceholder
 )
 from langchain_core.prompts.base import BasePromptTemplate
-from common import get_prompt_from_file
-from decouple import config
 
-class InfoPrompter():        
+class InfoPrompterFactory():        
 
     @classmethod
-    def get_prompter(cls) -> BasePromptTemplate:
-        return InfoPrompter.__get_chat_prompt_template()
+    def factory_prompter(cls, system_msg: str, human_msg: str) -> BasePromptTemplate:
+        return InfoPrompterFactory.__get_chat_prompt_template(system_msg=system_msg, human_msg=human_msg)
 
     @classmethod
-    def __get_chat_prompt_template(cls) -> ChatPromptTemplate:
+    def __get_chat_prompt_template(cls, system_msg: str, human_msg: str) -> ChatPromptTemplate:
         return ChatPromptTemplate.from_messages([
-            SystemMessagePromptTemplate.from_template(
-                get_prompt_from_file(
-                    path=config('PROMPT_GENERIC_FOLDER_PATH')
-                )
-            ),
+            SystemMessagePromptTemplate.from_template(system_msg),
             MessagesPlaceholder("chat_history"),
-            HumanMessagePromptTemplate.from_template("""
-                Abaixo há informações úteis do nosso conhecimento.
-                Contexto: {context}
-                Pergunta: {question}
-            """),
+            HumanMessagePromptTemplate.from_template(human_msg),
         ])
