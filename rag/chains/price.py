@@ -1,29 +1,56 @@
-from langchain_ollama import ChatOllama
 from langchain.chains import ConversationalRetrievalChain
-from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
-from langchain_ollama import OllamaEmbeddings
-from langchain_chroma import Chroma
-from config import LLM_MODEL, OLLAMA_URL, EMBEDDINGS_MODEL, PERSIST_DIR, GENERIC_SYSTEM_PROMPT
+from langchain.memory import ConversationBufferWindowMemory
+from langchain.prompts import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+from langchain_openai import ChatOpenAI
+from constants import API_KEY, LLM_MODEL, PRICE_SYSTEM_PROMPT
+from vectorstore import retriever as price_retriever
+from memory.shared_memory import shared_history
+from langchain_core.runnables import RunnableWithMessageHistory
 
-# LLM e vectorstore
-llm = ChatOllama(model=LLM_MODEL, base_url=OLLAMA_URL, temperature=0.8, streaming=False)
-emb = OllamaEmbeddings(model=EMBEDDINGS_MODEL, base_url=OLLAMA_URL)
-vectordb = Chroma(persist_directory=PERSIST_DIR, embedding_function=emb)
+price_llm = ChatOpenAI(
+    model=LLM_MODEL,
+    temperature=0.0,
+    streaming=False,
+    api_key=API_KEY,
+)
 
-retriever = vectordb.as_retriever(search_kwargs={"k": 5})
+# --- 2) Memória resumida para manter o histórico enxuto ---
+# price_memory = ConversationBufferWindowMemory(
+#     memory_key="chat_history",
+#     input_key="question",
+#     output_key="answer",
+#     return_messages=True,
+#     k=1
+# )
 
-# Prompt para preço
+# --- 3) Prompt para extração de preço ---
 price_prompt = ChatPromptTemplate.from_messages([
-    SystemMessagePromptTemplate.from_template(GENERIC_SYSTEM_PROMPT),
+    SystemMessagePromptTemplate.from_template(
+        PRICE_SYSTEM_PROMPT
+    ),
     HumanMessagePromptTemplate.from_template(
-        "Dado o contexto abaixo de catálogo de produtos, responda EXATAMENTE qual é o preço em reais do produto '{question}'.\nContexto:\n{context}\nResposta:\n"
+        "Responda **EXATAMENTE** o valor em reais, e complemente com as informações necessárias. \n"
+        "Histórico da conversa:\n{chat_history}\n\n"
+        "Catálogo de produtos:\n{context}\n\n"
+        "Pergunta: Qual é o preço em reais do produto “{question}”?\n"
     ),
 ])
 
-price_chain = ConversationalRetrievalChain.from_llm(
-    llm=llm,
-    retriever=retriever,
-    memory=None,
-    return_source_documents=False,
-    combine_docs_chain_kwargs={"prompt": price_prompt}
+# --- 4) Cadeia de preço (modo stuff) ---
+price_chain_base = ConversationalRetrievalChain.from_llm(
+    llm=price_llm,
+    retriever=price_retriever,
+    return_source_documents=True,
+    chain_type="stuff",
+    combine_docs_chain_kwargs={"prompt": price_prompt},
+)
+price_chain = RunnableWithMessageHistory(
+    price_chain_base,
+    shared_history,
+    input_messages_key="question",
+    history_messages_key="chat_history",
 )

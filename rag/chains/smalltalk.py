@@ -1,13 +1,43 @@
 from langchain_ollama import ChatOllama
-from langchain.chains import LLMChain
-from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
-from config import LLM_MODEL, OLLAMA_URL, GENERIC_SYSTEM_PROMPT
+from langchain.chains import ConversationChain
+from langchain.prompts import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+from langchain.memory import ConversationBufferMemory
+from langchain_openai import ChatOpenAI
+from constants import API_KEY, LLM_MODEL, OLLAMA_URL, GENERIC_SYSTEM_PROMPT
+from memory.shared_memory import shared_history
+from langchain_core.runnables import RunnableWithMessageHistory
 
-llm = ChatOllama(model=LLM_MODEL, base_url=OLLAMA_URL, temperature=0.0, streaming=False)
+smalltalk_llm = ChatOpenAI(
+    model=LLM_MODEL,
+    temperature=0.7,
+    streaming=False,
+    api_key=API_KEY,
+)
 
+# 2) Memória simples para manter o contexto da conversa
+# smalltalk_memory = ConversationBufferMemory(
+#     memory_key="chat_history",
+#     return_messages=True,
+# )
+
+# 3) Prompt “chat” enxuto para smalltalk
 smalltalk_prompt = ChatPromptTemplate.from_messages([
     SystemMessagePromptTemplate.from_template(GENERIC_SYSTEM_PROMPT),
-    HumanMessagePromptTemplate.from_template("Usuário: {input}")
+    HumanMessagePromptTemplate.from_template(
+        "Histórico da conversa:\n{chat_history}\n\n"
+        "Seja amigável e descontraído quando o usuário quiser apenas bater papo. Porém NÃO SAIA DO CONTEXTO (se sair informe que você não conhece/pode falar sobre tais assuntos), NEM SEJA ANTI PROFISSIONAL.\n"
+        "Usuário: {input}\n"
+    ),
 ])
 
-smalltalk_chain = LLMChain(llm=llm, prompt=smalltalk_prompt)
+# 4) Cadeia de conversação que usa memória
+smalltalk_chain = RunnableWithMessageHistory(
+    smalltalk_prompt | smalltalk_llm,
+    shared_history,
+    input_messages_key="input",
+    history_messages_key="chat_history",
+)

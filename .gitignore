@@ -2,6 +2,8 @@
 data/
 logs/
 knowledge-base
+vectorized-knowledge-bases
+history
 studies
 *prompt.txt
 

@@ -1,47 +1,73 @@
+# chains/info.py
+
 from langchain_ollama import ChatOllama
 from langchain.chains import ConversationalRetrievalChain
-from langchain.memory import ConversationBufferMemory
+from langchain.memory import (
+    CombinedMemory,
+    ConversationBufferMemory,
+    ConversationSummaryMemory,
+)
 from langchain.prompts import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
-from langchain_ollama import OllamaEmbeddings
-from langchain_chroma import Chroma
-from config import (
-    LLM_MODEL,
-    OLLAMA_URL,
-    EMBEDDINGS_MODEL,
-    PERSIST_DIR,
-    GENERIC_SYSTEM_PROMPT,
+from langchain_openai import ChatOpenAI
+from constants import API_KEY, LLM_MODEL, GENERIC_SYSTEM_PROMPT
+from vectorstore import retriever
+from memory.shared_memory import shared_history
+from langchain_core.runnables import RunnableWithMessageHistory
+
+llm = ChatOpenAI(
+    model=LLM_MODEL,
+    temperature=0.3,
+    streaming=False,
+    api_key=API_KEY,
 )
 
-# 1) inicializa o LLM, embeddings e vectorstore (sem filtros)
-llm = ChatOllama(model=LLM_MODEL, base_url=OLLAMA_URL, temperature=0.8, streaming=False)
-emb = OllamaEmbeddings(model=EMBEDDINGS_MODEL, base_url=OLLAMA_URL)
-vectordb = Chroma(persist_directory=PERSIST_DIR, embedding_function=emb)
+# --- 2) Memória combinada ---
+# buffer_memory = ConversationBufferMemory(
+#     memory_key="chat_history",
+#     input_key="question",
+#     output_key="answer",
+#     return_messages=True
+# )
 
-# 2) retriever “cru” — busca sem metadata filters
-retriever = vectordb.as_retriever(k=5)
-
-# 3) memória para manter o fluxo da conversa
-# memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-
-# 4) prompt combinado com seu system prompt genérico
-info_prompt = ChatPromptTemplate.from_messages([
+# --- 3) Definição dos prompts ---
+question_prompt = ChatPromptTemplate.from_messages([
     SystemMessagePromptTemplate.from_template(GENERIC_SYSTEM_PROMPT),
     HumanMessagePromptTemplate.from_template(
-        "Abaixo há informações úteis do nosso conhecimento.\n"
-        "Contexto: {context}\n"
-        "Pergunta: {question}"
+        "Histórico da conversa:\n\n{chat_history}\n\n"
+        "Contextos recuperados:\n\n{context}\n\n"
+        "Pergunta:\n\n{question}"
+    ),
+])
+refine_prompt = ChatPromptTemplate.from_messages([
+    SystemMessagePromptTemplate.from_template(GENERIC_SYSTEM_PROMPT),
+    HumanMessagePromptTemplate.from_template(
+        "Histórico da conversa:\n\n{chat_history}\n\n"
+        "Pergunta original:\n\n{question}\n\n"
+        "Resposta-base até agora:\n\n{existing_answer}\n\n"
+        "Novos contextos:\n\n{context}\n\n"
+        "Por favor, refine a resposta mantendo-se fiel às fontes e ao histórico."
     ),
 ])
 
-# 5) monta a ConversationalRetrievalChain sem filtros adicionais
-info_chain = ConversationalRetrievalChain.from_llm(
+# --- 4) Construção da ConversationalRetrievalChain ---
+info_chain_base = ConversationalRetrievalChain.from_llm(
     llm=llm,
     retriever=retriever,
-    memory=None,
-    return_source_documents=False,
-    combine_docs_chain_kwargs={"prompt": info_prompt},
+    return_source_documents=True,
+    chain_type="refine",
+    combine_docs_chain_kwargs={
+        "question_prompt": question_prompt,
+        "refine_prompt": refine_prompt,
+        "document_variable_name": "context",
+    },
+)
+info_chain = RunnableWithMessageHistory(
+    info_chain_base,
+    shared_history,
+    input_messages_key="question",
+    history_messages_key="chat_history",
 )

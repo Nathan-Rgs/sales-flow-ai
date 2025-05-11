@@ -31,4 +31,5 @@ def load_documents(base_path: str) -> List[Document]:
             doc = loader.load()[0]
             doc.metadata.setdefault("doc_type", os.path.basename(base_path))
             documents.append(doc)
+    print(f"[load_documents] {len(documents)} documentos carregados de {base_path}")
     return documents
