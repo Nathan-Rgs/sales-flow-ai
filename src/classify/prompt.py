@@ -1,13 +1,13 @@
+from common import get_tags
 from langchain_core.prompts import PromptTemplate
 from langchain_core.prompts.base import BasePromptTemplate
-from decouple import config
 from typing import List
 
 class ClassifyPrompter():
     templater: BasePromptTemplate
 
     def __init__(self):
-        tags: List[str] = self.__get_tags()
+        tags: List[str] = get_tags()
         self.templater = PromptTemplate(
             input_variables=["input"],
             template=f"""
@@ -24,7 +24,3 @@ class ClassifyPrompter():
 
     def get_templater(self) -> BasePromptTemplate:
         return self.templater
-
-    def __get_tags(self) -> List[str]:
-        tags: str = config('TAGS')
-        return tags.lower().split(sep=', ')

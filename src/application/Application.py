@@ -1,6 +1,6 @@
 from classify.controller import ClassifyController
+from common import get_tags
 from info.controller import InfoController
-from decouple import config
 from typing import List
 
 class ApplicationRAG():
@@ -11,7 +11,7 @@ class ApplicationRAG():
     def __init__(self):
         self.__controller_classify = ClassifyController()
         self.__controller_info = InfoController()
-        self.__tags = self.__get_tags()
+        self.__tags = get_tags()
 
     async def run(self, input: str) -> str:
         if not self.__is_valid_input(input=input):
@@ -31,7 +31,3 @@ class ApplicationRAG():
         if len(input) < 1:
             return False
         return True
-
-    def __get_tags(self) -> List[str]:
-        tags: str = config('TAGS')
-        return tags.lower().split(sep=', ')
