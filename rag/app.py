@@ -1,14 +1,15 @@
 import gradio as gr
+
 from graph import route_and_generate
 from chains.price      import price_chain
 from chains.info       import info_chain
 from chains.smalltalk  import smalltalk_chain
 
 async def chat_fn(user_message: str, history: str) -> str:
-    info_chain.memory.memories[0].clear()
-    info_chain.memory.memories[1].clear()
-    price_chain.memory.clear()
-    smalltalk_chain.memory.clear()
+    if not history:
+        info_chain.memory.memories[0].clear()
+        price_chain.memory.clear()
+        smalltalk_chain.memory.clear()
 
     assistant_reply = await route_and_generate(user_message)
     return assistant_reply

@@ -1,11 +1,17 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 OLLAMA_URL       = os.getenv("OLLAMA_URL", "http://localhost:11434")
-EMBEDDINGS_MODEL = os.getenv("EMBEDDINGS_MODEL", "mxbai-embed-large")   
-LLM_MODEL        = os.getenv("LLM_MODEL", "llama3")                    
-PERSIST_DIR      = os.getenv("PERSIST_DIR", "knowledge-base")  
-CHUNK_SIZE       = int(os.getenv("CHUNK_SIZE", 1000))                    
-CHUNK_OVERLAP    = int(os.getenv("CHUNK_OVERLAP", 200))                   
+EMBEDDINGS_MODEL = os.getenv("EMBEDDINGS_MODEL", "text-embedding-3-small")
+LLM_MODEL        = os.getenv("LLM_MODEL", "gpt-4o-mini")
+DOCS_PATH = os.getenv("LLM_MODEL", "./preprocessing/knowledge-base")
+PERSIST_DIR      = os.getenv("PERSIST_DIR", "vectorized-knowledge-bases/base-faiss")  
+CHUNK_SIZE       = int(os.getenv("CHUNK_SIZE", 1000))
+CHUNK_OVERLAP    = int(os.getenv("CHUNK_OVERLAP", 200))
+
+API_KEY = os.getenv("API_KEY", "sk-")
 
 GENERIC_SYSTEM_PROMPT = """
 Você é um assistente de vendas da JVF Máquinas, especializado em mandriladoras portáteis para reparos em campo.
@@ -14,7 +20,7 @@ Você deve ser amigável, Profissional, empático, use de respostas curtas, com 
 ***Foco em relacionamento de longo prazo e conversão de leads***
 
 ---  
-PRINCIPAIS INSTRUÇÕES PARA RAG  
+PRINCIPAIS INSTRUÇÕES
 1. **Contexto em primeiro lugar**  
    - Baseie todas as respostas **única e exclusivamente** no histórico resumido e nos trechos recuperados.  
    - Se não encontrar informação pertinente, informe: “Desculpe, não posso lhe informar isso.”  

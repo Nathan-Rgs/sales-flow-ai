@@ -7,14 +7,22 @@ from langchain.prompts import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
-from constants import LLM_MODEL, OLLAMA_URL
+from langchain_openai import ChatOpenAI
+from constants import API_KEY, LLM_MODEL, OLLAMA_URL
 
 # 1) LLM configurado com temperatura zero para classificação determinística
-router_llm = ChatOllama(
+# router_llm = ChatOllama(
+#     model=LLM_MODEL,
+#     base_url=OLLAMA_URL,
+#     temperature=0.0,
+#     streaming=False,
+# )
+
+router_llm = ChatOpenAI(
     model=LLM_MODEL,
-    base_url=OLLAMA_URL,
     temperature=0.0,
     streaming=False,
+    api_key=API_KEY,
 )
 
 # 2) Prompt em formato “chat” para roteamento de intenções
@@ -30,7 +38,4 @@ router_prompt = ChatPromptTemplate.from_messages([
 ])
 
 # 3) LLMChain que combina o prompt + o LLM
-router_chain = LLMChain(
-    llm=router_llm,
-    prompt=router_prompt,
-)
+router_chain = router_prompt | router_llm

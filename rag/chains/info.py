@@ -1,69 +1,61 @@
-from langchain_ollama import ChatOllama, OllamaEmbeddings
-from langchain_chroma import Chroma
+# chains/info.py
+
+from langchain_ollama import ChatOllama
 from langchain.chains import ConversationalRetrievalChain
-from langchain.prompts import (
-    ChatPromptTemplate,
-    SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-)
 from langchain.memory import (
     CombinedMemory,
     ConversationBufferMemory,
     ConversationSummaryMemory,
 )
-from constants import (
-    LLM_MODEL,
-    OLLAMA_URL,
-    EMBEDDINGS_MODEL,
-    PERSIST_DIR,
-    GENERIC_SYSTEM_PROMPT,
+from langchain.prompts import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
 )
+from langchain_openai import ChatOpenAI
+from constants import API_KEY, LLM_MODEL, OLLAMA_URL, GENERIC_SYSTEM_PROMPT
+from vectorstore import retriever
 
-# --- 1) LLM e Retriever ---
-llm = ChatOllama(
+# --- 1) Instância do LLM ---
+# llm = ChatOllama(
+#     model=LLM_MODEL,
+#     base_url=OLLAMA_URL,
+#     temperature=0.3,
+#     streaming=False,
+# )
+
+llm = ChatOpenAI(
     model=LLM_MODEL,
-    base_url=OLLAMA_URL,
     temperature=0.3,
     streaming=False,
+    api_key=API_KEY,
 )
-emb = OllamaEmbeddings(
-    model=EMBEDDINGS_MODEL,
-    base_url=OLLAMA_URL,
-)
-vectordb = Chroma(
-    persist_directory=PERSIST_DIR,
-    embedding_function=emb,
-)
-retriever = vectordb.as_retriever()
 
-# --- 2) Memória combinada: buffer (chat_history) + resumo (history) ---
+# --- 2) Memória combinada ---
 buffer_memory = ConversationBufferMemory(
-    memory_key="chat_history",   # histórico completo
-    input_key="question",        # sua chave de entrada
-    output_key="answer",         # nomeia a saída do chain
-    return_messages=False,
+    memory_key="chat_history",
+    input_key="question",
+    output_key="answer",
+    return_messages=True
 )
 summary_memory = ConversationSummaryMemory(
     llm=llm,
-    input_key="question",        # mesma chave de entrada
-    output_key="answer",         # mesma saída que o buffer
-    summary_key="history",       # variá­vel que vai para o prompt
-    max_token_limit=800,         # controla o tamanho do resumo
+    input_key="question",
+    output_key="answer",
+    summary_key="history",
+    max_token_limit=800,
 )
-combined_memory = CombinedMemory(
-    memories=[buffer_memory, summary_memory]
-)
+combined_memory = CombinedMemory(memories=[buffer_memory, summary_memory], memory_key="combined_memory")
 
-# --- 3) Prompts atualizados ---
+# --- 3) Definição dos prompts ---
 question_prompt = ChatPromptTemplate.from_messages([
     SystemMessagePromptTemplate.from_template(GENERIC_SYSTEM_PROMPT),
     HumanMessagePromptTemplate.from_template(
         "Resumo do que falamos:\n\n{history}\n\n"
-        "Trechos recuperados:\n\n{context}\n\n"
+        "contextos recuperados:\n\n{context}\n\n"
         "Pergunta:\n\n{question}"
     ),
 ])
-
 refine_prompt = ChatPromptTemplate.from_messages([
     SystemMessagePromptTemplate.from_template(GENERIC_SYSTEM_PROMPT),
     HumanMessagePromptTemplate.from_template(
@@ -71,16 +63,16 @@ refine_prompt = ChatPromptTemplate.from_messages([
         "Resumo do que falamos:\n\n{history}\n\n"
         "Pergunta original:\n\n{question}\n\n"
         "Resposta-base até agora:\n\n{existing_answer}\n\n"
-        "Novos trechos:\n\n{context}\n\n"
+        "Novos contextos:\n\n{context}\n\n"
         "Por favor, refine a resposta mantendo-se fiel às fontes e ao histórico."
     ),
 ])
 
-# --- 4) Cadeia ConversationalRetrievalChain (modo refine) ---
+# --- 4) Construção da ConversationalRetrievalChain ---
 info_chain = ConversationalRetrievalChain.from_llm(
     llm=llm,
     retriever=retriever,
-    memory=combined_memory,            # usa a memória combinada
+    memory=combined_memory,
     return_source_documents=True,
     chain_type="refine",
     combine_docs_chain_kwargs={
@@ -89,7 +81,3 @@ info_chain = ConversationalRetrievalChain.from_llm(
         "document_variable_name": "context",
     },
 )
-
-# --- 5) Uso na prática ---
-# Substitua a chamada obsoleta `chain.acall` por:
-# response = await info_chain.arun({"question": user_message})

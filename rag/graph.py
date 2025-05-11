@@ -1,5 +1,3 @@
-# graph.py
-
 from chains.router     import router_chain
 from chains.price      import price_chain
 from chains.info       import info_chain
@@ -40,12 +38,10 @@ async def route_and_generate(user_message: str) -> str:
     # 3) Se vier dict, trata specially a info_chain
     if isinstance(result, dict):
         if "answer" in result:
-            # log de fontes
             for doc in result.get("source_documents", []):
                 print("Fonte:", doc.metadata.get("source", "<sem source>"))
             return result["answer"]
-        # para price_chain e smalltalk_chain (LLMChain), usa a chave padrão 'text'
-        return result.get("text", next(iter(result.values())))
+        return result.get("response", next(iter(result.values())))
 
     # 4) Fallback: se não for dict, retorna como string
     return str(result)

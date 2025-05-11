@@ -1,24 +1,25 @@
-# rag/optmizeStrategy/indexing.py
+# rag/optimizeStrategy/indexing.py
 
 import os
 import logging
 import shutil
-from langchain_chroma import Chroma
-from langchain_ollama import OllamaEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from constants import (
+    API_KEY,
     EMBEDDINGS_MODEL,
-    OLLAMA_URL,
     PERSIST_DIR,
     CHUNK_SIZE,
     CHUNK_OVERLAP,
+    LLM_MODEL
 )
 
 logger = logging.getLogger(__name__)
 
 def build_vectorstore(docs):
     """
-    Chunka os docs, cria um Chroma vectorstore e persiste em disco.
+    Chunka os docs, cria um FAISS vectorstore e persiste em disco.
     """
     # remove cache antigo (se existir)
     if os.path.exists(PERSIST_DIR):
@@ -31,29 +32,31 @@ def build_vectorstore(docs):
     )
     split_docs = splitter.split_documents(docs)
 
-    # 2) Embeddings
-    embeddings = OllamaEmbeddings(model=EMBEDDINGS_MODEL, base_url=OLLAMA_URL)
+    # 2) Embeddings via OpenAI
+    embeddings = OpenAIEmbeddings(model=EMBEDDINGS_MODEL, api_key=API_KEY)
 
-    # 3) Cria e persiste o vectorstore
-    vectordb = Chroma.from_documents(
+    # 3) Cria o vectorstore FAISS
+    vectordb = FAISS.from_documents(
         documents=split_docs,
-        embedding_function=embeddings,
-        persist_directory=PERSIST_DIR,
+        embedding=embeddings,
     )
-    vectordb.persist()
-    logger.info(f"Vectorstore criado com {vectordb._collection.count()} vetores.")
+    os.makedirs(PERSIST_DIR, exist_ok=True)
+    vectordb.save_local(PERSIST_DIR)
+
+    logger.info(f"Vectorstore criado com {vectordb.index.ntotal} vetores.")
     return vectordb
 
 def load_vectorstore():
     """
-    Carrega um Chroma vectorstore já persistido.
+    Carrega um FAISS vectorstore já persistido.
     """
-    embeddings = OllamaEmbeddings(model=EMBEDDINGS_MODEL, base_url=OLLAMA_URL)
-    vectordb = Chroma(
-        persist_directory=PERSIST_DIR,
-        embedding_function=embeddings,
+    embeddings = OpenAIEmbeddings(model=EMBEDDINGS_MODEL, api_key=API_KEY)
+    vectordb = FAISS.load_local(
+        folder_path=PERSIST_DIR,
+        embeddings=embeddings,
+        allow_dangerous_deserialization=True,
     )
-    logger.info(f"Vectorstore carregado com {vectordb._collection.count()} vetores.")
+    logger.info(f"Vectorstore carregado com {vectordb.index.ntotal} vetores.")
     return vectordb
 
 def get_vectorstore(docs):
@@ -64,7 +67,7 @@ def get_vectorstore(docs):
     """
     if os.path.exists(PERSIST_DIR):
         vectordb = load_vectorstore()
-        if vectordb._collection.count() > 0:
+        if vectordb.index.ntotal > 0:
             return vectordb
         else:
             logger.info("Vectorstore vazio. Rebuildando…")
