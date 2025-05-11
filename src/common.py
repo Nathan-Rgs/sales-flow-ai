@@ -12,3 +12,19 @@ def get_tags() -> List[str]:
     """
     tags: str = config('TAGS')
     return tags.lower().split(sep=', ')
+
+def get_prompt_from_file(path: str) -> str:
+    """
+    Function to get a prompt in a file content from File System.
+
+    Parameters
+    ----------
+    path : str
+        Absolute or relative file path.
+
+    Returns
+    -------
+    str
+        Content of file.
+    """
+    return open(file=path, mode='r', encoding='utf8').read()
