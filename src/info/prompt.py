@@ -1,4 +1,9 @@
-from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from langchain_core.prompts import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder
+)
 from langchain_core.prompts.base import BasePromptTemplate
 from decouple import config
 
@@ -11,7 +16,7 @@ class InfoPrompter():
     @classmethod
     def get_prompt(cls) -> str:
         return open(
-            file='./config/generic_prompt.txt',
+            file=config('PROMPT_GENERIC_FOLDER_PATH'),
             mode='r', encoding='utf8'
         ).read()
 
@@ -21,6 +26,7 @@ class InfoPrompter():
             SystemMessagePromptTemplate.from_template(
                 InfoPrompter().get_prompt()
             ),
+            MessagesPlaceholder("chat_history"),
             HumanMessagePromptTemplate.from_template("""
                 Abaixo há informações úteis do nosso conhecimento.
                 Contexto: {context}
