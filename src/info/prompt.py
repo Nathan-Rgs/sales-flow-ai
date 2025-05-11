@@ -16,6 +16,5 @@ class InfoPrompterFactory():
     def __get_chat_prompt_template(cls, system_msg: str, human_msg: str) -> ChatPromptTemplate:
         return ChatPromptTemplate.from_messages([
             SystemMessagePromptTemplate.from_template(system_msg),
-            MessagesPlaceholder("chat_history"),
             HumanMessagePromptTemplate.from_template(human_msg),
         ])
