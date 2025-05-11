@@ -3,6 +3,7 @@ data/
 logs/
 knowledge-base
 vectorized-knowledge-bases
+history
 studies
 
 # Byte-compiled / optimized / DLL files

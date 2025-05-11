@@ -8,14 +8,8 @@ from langchain.prompts import (
 from langchain.memory import ConversationBufferMemory
 from langchain_openai import ChatOpenAI
 from constants import API_KEY, LLM_MODEL, OLLAMA_URL, GENERIC_SYSTEM_PROMPT
-
-# 1) LLM com temperatura um pouco mais alta para smalltalk
-# smalltalk_llm = ChatOllama(
-#     model=LLM_MODEL,
-#     base_url=OLLAMA_URL,
-#     temperature=0.7,    # respostas mais “soltas” e naturais
-#     streaming=False,
-# )
+from memory.shared_memory import shared_history
+from langchain_core.runnables import RunnableWithMessageHistory
 
 smalltalk_llm = ChatOpenAI(
     model=LLM_MODEL,
@@ -25,10 +19,10 @@ smalltalk_llm = ChatOpenAI(
 )
 
 # 2) Memória simples para manter o contexto da conversa
-smalltalk_memory = ConversationBufferMemory(
-    memory_key="chat_history",
-    return_messages=True,
-)
+# smalltalk_memory = ConversationBufferMemory(
+#     memory_key="chat_history",
+#     return_messages=True,
+# )
 
 # 3) Prompt “chat” enxuto para smalltalk
 smalltalk_prompt = ChatPromptTemplate.from_messages([
@@ -41,8 +35,9 @@ smalltalk_prompt = ChatPromptTemplate.from_messages([
 ])
 
 # 4) Cadeia de conversação que usa memória
-smalltalk_chain = ConversationChain(
-    llm=smalltalk_llm,
-    prompt=smalltalk_prompt,
-    memory=smalltalk_memory,
+smalltalk_chain = RunnableWithMessageHistory(
+    smalltalk_prompt | smalltalk_llm,
+    shared_history,
+    input_messages_key="input",
+    history_messages_key="chat_history",
 )

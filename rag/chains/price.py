@@ -1,4 +1,3 @@
-from langchain_ollama import ChatOllama
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferWindowMemory
 from langchain.prompts import (
@@ -7,16 +6,10 @@ from langchain.prompts import (
     HumanMessagePromptTemplate,
 )
 from langchain_openai import ChatOpenAI
-from constants import API_KEY, LLM_MODEL, OLLAMA_URL, PRICE_SYSTEM_PROMPT
+from constants import API_KEY, LLM_MODEL, PRICE_SYSTEM_PROMPT
 from vectorstore import retriever as price_retriever
-
-# --- 1) LLM focado e determinístico ---
-# price_llm = ChatOllama(
-#     model=LLM_MODEL,
-#     base_url=OLLAMA_URL,
-#     temperature=0.0,
-#     streaming=False,
-# )
+from memory.shared_memory import shared_history
+from langchain_core.runnables import RunnableWithMessageHistory
 
 price_llm = ChatOpenAI(
     model=LLM_MODEL,
@@ -26,13 +19,13 @@ price_llm = ChatOpenAI(
 )
 
 # --- 2) Memória resumida para manter o histórico enxuto ---
-price_memory = ConversationBufferWindowMemory(
-    memory_key="chat_history",
-    input_key="question",
-    output_key="answer",
-    return_messages=True,
-    k=1
-)
+# price_memory = ConversationBufferWindowMemory(
+#     memory_key="chat_history",
+#     input_key="question",
+#     output_key="answer",
+#     return_messages=True,
+#     k=1
+# )
 
 # --- 3) Prompt para extração de preço ---
 price_prompt = ChatPromptTemplate.from_messages([
@@ -48,11 +41,16 @@ price_prompt = ChatPromptTemplate.from_messages([
 ])
 
 # --- 4) Cadeia de preço (modo stuff) ---
-price_chain = ConversationalRetrievalChain.from_llm(
+price_chain_base = ConversationalRetrievalChain.from_llm(
     llm=price_llm,
     retriever=price_retriever,
-    memory=price_memory,
     return_source_documents=True,
     chain_type="stuff",
     combine_docs_chain_kwargs={"prompt": price_prompt},
+)
+price_chain = RunnableWithMessageHistory(
+    price_chain_base,
+    shared_history,
+    input_messages_key="question",
+    history_messages_key="chat_history",
 )

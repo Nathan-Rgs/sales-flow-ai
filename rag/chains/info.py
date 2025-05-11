@@ -13,16 +13,10 @@ from langchain.prompts import (
     HumanMessagePromptTemplate,
 )
 from langchain_openai import ChatOpenAI
-from constants import API_KEY, LLM_MODEL, OLLAMA_URL, GENERIC_SYSTEM_PROMPT
+from constants import API_KEY, LLM_MODEL, GENERIC_SYSTEM_PROMPT
 from vectorstore import retriever
-
-# --- 1) Instância do LLM ---
-# llm = ChatOllama(
-#     model=LLM_MODEL,
-#     base_url=OLLAMA_URL,
-#     temperature=0.3,
-#     streaming=False,
-# )
+from memory.shared_memory import shared_history
+from langchain_core.runnables import RunnableWithMessageHistory
 
 llm = ChatOpenAI(
     model=LLM_MODEL,
@@ -32,35 +26,26 @@ llm = ChatOpenAI(
 )
 
 # --- 2) Memória combinada ---
-buffer_memory = ConversationBufferMemory(
-    memory_key="chat_history",
-    input_key="question",
-    output_key="answer",
-    return_messages=True
-)
-summary_memory = ConversationSummaryMemory(
-    llm=llm,
-    input_key="question",
-    output_key="answer",
-    summary_key="history",
-    max_token_limit=800,
-)
-combined_memory = CombinedMemory(memories=[buffer_memory, summary_memory], memory_key="combined_memory")
+# buffer_memory = ConversationBufferMemory(
+#     memory_key="chat_history",
+#     input_key="question",
+#     output_key="answer",
+#     return_messages=True
+# )
 
 # --- 3) Definição dos prompts ---
 question_prompt = ChatPromptTemplate.from_messages([
     SystemMessagePromptTemplate.from_template(GENERIC_SYSTEM_PROMPT),
     HumanMessagePromptTemplate.from_template(
-        "Resumo do que falamos:\n\n{history}\n\n"
-        "contextos recuperados:\n\n{context}\n\n"
+        "Histórico da conversa:\n\n{chat_history}\n\n"
+        "Contextos recuperados:\n\n{context}\n\n"
         "Pergunta:\n\n{question}"
     ),
 ])
 refine_prompt = ChatPromptTemplate.from_messages([
     SystemMessagePromptTemplate.from_template(GENERIC_SYSTEM_PROMPT),
     HumanMessagePromptTemplate.from_template(
-        "Histórico completo:\n\n{chat_history}\n\n"
-        "Resumo do que falamos:\n\n{history}\n\n"
+        "Histórico da conversa:\n\n{chat_history}\n\n"
         "Pergunta original:\n\n{question}\n\n"
         "Resposta-base até agora:\n\n{existing_answer}\n\n"
         "Novos contextos:\n\n{context}\n\n"
@@ -69,10 +54,9 @@ refine_prompt = ChatPromptTemplate.from_messages([
 ])
 
 # --- 4) Construção da ConversationalRetrievalChain ---
-info_chain = ConversationalRetrievalChain.from_llm(
+info_chain_base = ConversationalRetrievalChain.from_llm(
     llm=llm,
     retriever=retriever,
-    memory=combined_memory,
     return_source_documents=True,
     chain_type="refine",
     combine_docs_chain_kwargs={
@@ -80,4 +64,10 @@ info_chain = ConversationalRetrievalChain.from_llm(
         "refine_prompt": refine_prompt,
         "document_variable_name": "context",
     },
+)
+info_chain = RunnableWithMessageHistory(
+    info_chain_base,
+    shared_history,
+    input_messages_key="question",
+    history_messages_key="chat_history",
 )
