@@ -2,7 +2,7 @@ from common import get_prompt_from_file
 from decouple import config
 from model.factory import ModelFactory
 from info.prompt import InfoPrompterFactory
-from info.retreive import InfoRetreiver
+from src.info.database import InfoDatabase
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.runnables import Runnable, RunnableWithMessageHistory
 from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
@@ -10,15 +10,15 @@ from memory.shared_memory import get_shared_history
 
 class InfoController():
 
-    __retriver: InfoRetreiver
+    __db: InfoDatabase
     __model: BaseChatModel
     __chain: Runnable
 
     def __init__(self):
         self.__model = ModelFactory().connect_factory(temperature=0.8)
-        self.__retriver = InfoRetreiver()
-        self.__retriver.connect_database()
-        self.__retriver.init_retreiver()
+        self.__db = InfoDatabase()
+        self.__db.connect_database()
+        self.__db.init_retreiver()
         self.__init_chain()
 
     def __init_chain(self) -> None:
