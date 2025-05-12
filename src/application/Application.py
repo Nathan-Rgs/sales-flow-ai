@@ -13,9 +13,9 @@ class ApplicationRAG():
 
     def __init__(self):
         self.__controller_classifier = ClassifierController()
-        self.__controller_price = controller.price.PriceController()
-        self.__controller_info = controller.info.InfoController()
-        self.__controller_smalltalk = controller.smalltalk.SmalltalkController()
+        self.__controller_price = controller.PriceController()
+        self.__controller_info = controller.InfoController()
+        self.__controller_smalltalk = controller.SmalltalkController()
         self.__tags = get_tags()
 
     async def run(self, input: str, session_id: str) -> str:

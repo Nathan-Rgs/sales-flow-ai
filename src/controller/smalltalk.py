@@ -4,9 +4,10 @@ from utils.model import ModelFactory
 from utils.prompt import PrompterFactory
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.runnables import Runnable, RunnableWithMessageHistory
+from interface.controller import InfoController
 from utils.shared_memory import get_shared_history
 
-class SmalltalkController():
+class SmalltalkController(InfoController):
 
     __model: BaseChatModel
     __chain: Runnable
