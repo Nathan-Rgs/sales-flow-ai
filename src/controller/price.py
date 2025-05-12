@@ -6,9 +6,10 @@ from utils.database import Database
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.runnables import Runnable, RunnableWithMessageHistory
 from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
+from interface.controller import InfoController
 from utils.shared_memory import get_shared_history
 
-class PriceController():
+class PriceController(InfoController):
 
     __db: Database
     __model: BaseChatModel
