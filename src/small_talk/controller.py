@@ -1,4 +1,4 @@
-from common import get_prompt_from_file
+from utils.common import get_prompt_from_file
 from decouple import config
 from model.factory import ModelFactory
 from small_talk.prompt import SmalltalkPrompterFactory

@@ -1,4 +1,4 @@
-from common import get_tags
+from utils.common import get_tags
 from pydantic import BaseModel, Field
 
 class ClassifierModel(BaseModel):

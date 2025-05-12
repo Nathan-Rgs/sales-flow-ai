@@ -1,4 +1,4 @@
-from common import get_tags
+from utils.common import get_tags
 from langchain_core.prompts import PromptTemplate
 from langchain_core.prompts.base import BasePromptTemplate
 from typing import List

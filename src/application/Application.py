@@ -1,5 +1,5 @@
 from classify.controller import ClassifierController
-from common import get_tags
+from utils.common import get_tags
 from info.controller import InfoController
 from price.controller import PriceController
 from small_talk.controller import SmalltalkController
