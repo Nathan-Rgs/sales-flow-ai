@@ -2,7 +2,7 @@ from common import get_prompt_from_file
 from decouple import config
 from model.factory import ModelFactory
 from info.prompt import InfoPrompterFactory
-from src.info.database import InfoDatabase
+from info.database import InfoDatabase
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.runnables import Runnable, RunnableWithMessageHistory
 from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
@@ -43,7 +43,7 @@ class InfoController():
         self.__chain = RunnableWithMessageHistory(
             runnable=ConversationalRetrievalChain.from_llm(
                 llm=self.__model,
-                retriever=self.__retriver.get_retriver(),
+                retriever=self.__db.get_retriver(),
                 return_source_documents=True,
                 chain_type="refine",
                 combine_docs_chain_kwargs={
