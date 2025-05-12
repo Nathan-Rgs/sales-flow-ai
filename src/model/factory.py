@@ -2,10 +2,9 @@ from decouple import config
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
-from interface.model import ModelInterface
 from pydantic import BaseModel
 
-class ModelFactory(ModelInterface):
+class ModelFactory():
 
     @classmethod
     def connect_factory(cls, temperature: float, schema: BaseModel | None = None) -> BaseChatModel:
