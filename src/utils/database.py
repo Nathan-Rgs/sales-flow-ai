@@ -4,8 +4,9 @@ from langchain_chroma.vectorstores import Chroma
 from langchain_community.vectorstores import FAISS
 from langchain_core.vectorstores import VectorStore, VectorStoreRetriever
 from langchain_core.retrievers import BaseRetriever
+from interface.database import DatabaseInterface
 
-class Database():
+class Database(DatabaseInterface):
 
     __db: VectorStore
     __retriver: BaseRetriever
