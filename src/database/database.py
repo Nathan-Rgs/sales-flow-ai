@@ -1,5 +1,5 @@
 from decouple import config
-from price.embedding import PriceEmbedderFactory
+from utils.embedding import EmbedderFactory
 from langchain_chroma.vectorstores import Chroma
 from langchain_community.vectorstores import FAISS
 from langchain_core.vectorstores import VectorStore, VectorStoreRetriever
@@ -22,12 +22,12 @@ class Database():
     def __connect_chroma(self) -> Chroma:
         return Chroma(
             persist_directory=config('DATABASE_FOLDER_PATH'),
-            embedding_function=PriceEmbedderFactory().factory_embedder()
+            embedding_function=EmbedderFactory().factory_embedder()
         )
 
     def __connect_faiss(self) -> Chroma:
         return FAISS.load_local(
             folder_path=config('DATABASE_FOLDER_PATH'),
-            embeddings=PriceEmbedderFactory().factory_embedder(),
+            embeddings=EmbedderFactory().factory_embedder(),
             allow_dangerous_deserialization=True,
         )
