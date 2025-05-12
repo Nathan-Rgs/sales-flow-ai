@@ -18,6 +18,7 @@ class SmalltalkController(InfoController):
 
     def __init_chain(self) -> None:
         smalltalk_prompt = PrompterFactory().factory_prompter(
+            tag='smalltalk',
             system_msg=get_prompt_from_file(config('PROMPT_GENERIC_FOLDER_PATH')),
             human_msg="""
                 Histórico da conversa:\n{chat_history}\n

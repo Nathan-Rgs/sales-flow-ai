@@ -24,6 +24,7 @@ class PriceController(InfoController):
 
     def __init_chain(self) -> None:
         price_prompt = PrompterFactory().factory_prompter(
+            tag='price',
             system_msg=get_prompt_from_file(config('PRICE_GENERIC_FOLDER_PATH')),
             human_msg="""
                 Responda **EXATAMENTE** o valor em reais, e complemente com as informações necessárias.
