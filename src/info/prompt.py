@@ -1,8 +1,7 @@
 from langchain_core.prompts import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-    MessagesPlaceholder
+    HumanMessagePromptTemplate
 )
 from langchain_core.prompts.base import BasePromptTemplate
 
