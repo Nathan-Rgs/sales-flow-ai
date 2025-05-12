@@ -1,0 +1,3 @@
+from controller.info import InfoController
+from controller.price import PriceController
+from controller.smalltalk import SmalltalkController

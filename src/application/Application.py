@@ -1,29 +1,27 @@
-from classify.controller import ClassifyController
-from common import get_tags
-from info.controller import InfoController
-from price.controller import PriceController
-from small_talk.controller import SmalltalkController
+from classify.controller import ClassifierController
+from utils.common import get_tags
 from typing import List
+import controller
 
 class ApplicationRAG():
 
-    __controller_classify: ClassifyController
-    __controller_price: PriceController
-    __controller_info: InfoController
-    __controller_smalltalk: SmalltalkController
+    __controller_classifier: ClassifierController
+    __controller_price: controller.PriceController
+    __controller_info: controller.InfoController
+    __controller_smalltalk: controller.SmalltalkController
     __tags = List[str]
 
     def __init__(self):
-        self.__controller_classify = ClassifyController()
-        self.__controller_price = PriceController()
-        self.__controller_info = InfoController()
-        self.__controller_smalltalk = SmalltalkController()
+        self.__controller_classifier = ClassifierController()
+        self.__controller_price = controller.price.PriceController()
+        self.__controller_info = controller.info.InfoController()
+        self.__controller_smalltalk = controller.smalltalk.SmalltalkController()
         self.__tags = get_tags()
 
     async def run(self, input: str, session_id: str) -> str:
         if not self.__is_valid_input(input=input):
             raise Exception("Not Valid Input")
-        tag = await self.__controller_classify.get_response(input=input)
+        tag = await self.__controller_classifier.get_response(input=input)
         if tag == self.__tags[0]:
             return await self.__controller_price.get_response(input=input, session_id=session_id)
         elif tag == self.__tags[1]:

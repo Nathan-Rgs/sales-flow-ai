@@ -1,12 +1,12 @@
-from common import get_prompt_from_file
+from utils.common import get_prompt_from_file
 from decouple import config
-from model.factory import ModelFactory
-from info.prompt import InfoPrompterFactory
-from database.database import Database
+from utils.model import ModelFactory
+from utils.prompt import PrompterFactory
+from utils.database import Database
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.runnables import Runnable, RunnableWithMessageHistory
 from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
-from memory.shared_memory import get_shared_history
+from utils.shared_memory import get_shared_history
 
 class InfoController():
 
@@ -22,7 +22,7 @@ class InfoController():
         self.__init_chain()
 
     def __init_chain(self) -> None:
-        question_prompt = InfoPrompterFactory().factory_prompter(
+        question_prompt = PrompterFactory().factory_prompter(
             system_msg=get_prompt_from_file(config('PROMPT_GENERIC_FOLDER_PATH')),
             human_msg="""
                 Histórico da conversa:\n\n{chat_history}
@@ -30,7 +30,7 @@ class InfoController():
                 Pergunta:\n\n{question}
             """
         )
-        refine_prompt = InfoPrompterFactory().factory_prompter(
+        refine_prompt = PrompterFactory().factory_prompter(
             system_msg=get_prompt_from_file(config('PROMPT_GENERIC_FOLDER_PATH')),
             human_msg="""
                 Histórico da conversa:\n\n{chat_history}\n

@@ -1,10 +1,10 @@
-from common import get_prompt_from_file
+from utils.common import get_prompt_from_file
 from decouple import config
-from model.factory import ModelFactory
-from small_talk.prompt import SmalltalkPrompterFactory
+from utils.model import ModelFactory
+from utils.prompt import PrompterFactory
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.runnables import Runnable, RunnableWithMessageHistory
-from memory.shared_memory import get_shared_history
+from utils.shared_memory import get_shared_history
 
 class SmalltalkController():
 
@@ -16,7 +16,7 @@ class SmalltalkController():
         self.__init_chain()
 
     def __init_chain(self) -> None:
-        smalltalk_prompt = SmalltalkPrompterFactory().factory_prompter(
+        smalltalk_prompt = PrompterFactory().factory_prompter(
             system_msg=get_prompt_from_file(config('PROMPT_GENERIC_FOLDER_PATH')),
             human_msg="""
                 Histórico da conversa:\n{chat_history}\n
