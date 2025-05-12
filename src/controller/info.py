@@ -6,6 +6,7 @@ from utils.database import Database
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.runnables import Runnable, RunnableWithMessageHistory
 from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
+from logging import getLogger, Logger
 from interface.controller import InfoController
 from utils.shared_memory import get_shared_history
 
@@ -14,8 +15,10 @@ class InfoController(InfoController):
     __db: Database
     __model: BaseChatModel
     __chain: Runnable
+    __logger: Logger
 
     def __init__(self):
+        self.__logger = getLogger('root')
         self.__model = ModelFactory().connect_factory(temperature=0.8)
         self.__db = Database()
         self.__db.connect_database()
@@ -60,6 +63,7 @@ class InfoController(InfoController):
         )
 
     async def get_response(self, input: str, session_id: str) ->  str:
+        self.__logger.info("Invoking response from Info Chain")
         result = await self.__chain.ainvoke(
             input={"question": input},
             config={"configurable": {"session_id": session_id}}
@@ -67,6 +71,7 @@ class InfoController(InfoController):
         return self.__process_response(msg=result)
 
     def __process_response(self, msg) -> str:
+        self.__logger.info("Processing response from Info Chain")
         if isinstance(msg, dict):
             if "answer" in msg: return msg["answer"]
             return msg.get("response") or next(iter(msg.values()), None)
