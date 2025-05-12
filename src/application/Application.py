@@ -1,23 +1,21 @@
 from classify.controller import ClassifierController
 from utils.common import get_tags
-from info.controller import InfoController
-from price.controller import PriceController
-from small_talk.controller import SmalltalkController
 from typing import List
+import controller
 
 class ApplicationRAG():
 
     __controller_classifier: ClassifierController
-    __controller_price: PriceController
-    __controller_info: InfoController
-    __controller_smalltalk: SmalltalkController
+    __controller_price: controller.PriceController
+    __controller_info: controller.InfoController
+    __controller_smalltalk: controller.SmalltalkController
     __tags = List[str]
 
     def __init__(self):
         self.__controller_classifier = ClassifierController()
-        self.__controller_price = PriceController()
-        self.__controller_info = InfoController()
-        self.__controller_smalltalk = SmalltalkController()
+        self.__controller_price = controller.price.PriceController()
+        self.__controller_info = controller.info.InfoController()
+        self.__controller_smalltalk = controller.smalltalk.SmalltalkController()
         self.__tags = get_tags()
 
     async def run(self, input: str, session_id: str) -> str:
