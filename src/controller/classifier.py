@@ -1,11 +1,12 @@
 from utils.model import ModelFactory
 from model.classifier import ClassifierModel
 from utils.prompt import PrompterFactory
+from interface.controller import InfoControllerInterface
 from langchain_core.runnables.base import RunnableSerializable
 from logging import getLogger, Logger
 from typing import Dict, Literal
 
-class ClassifierController():
+class ClassifierController(InfoControllerInterface):
     __chain: RunnableSerializable
     __logger: Logger
 
