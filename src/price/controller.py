@@ -1,7 +1,7 @@
 from utils.common import get_prompt_from_file
 from decouple import config
 from model.factory import ModelFactory
-from price.prompt import PricePrompterFactory
+from utils.prompt import PrompterFactory
 from database.database import Database
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.runnables import Runnable, RunnableWithMessageHistory
@@ -22,7 +22,7 @@ class PriceController():
         self.__init_chain()
 
     def __init_chain(self) -> None:
-        price_prompt = PricePrompterFactory().factory_prompter(
+        price_prompt = PrompterFactory().factory_prompter(
             system_msg=get_prompt_from_file(config('PRICE_GENERIC_FOLDER_PATH')),
             human_msg="""
                 Responda **EXATAMENTE** o valor em reais, e complemente com as informações necessárias.

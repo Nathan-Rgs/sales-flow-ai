@@ -5,11 +5,11 @@ from langchain_core.prompts import (
 )
 from langchain_core.prompts.base import BasePromptTemplate
 
-class InfoPrompterFactory():        
+class PrompterFactory():        
 
     @classmethod
     def factory_prompter(cls, system_msg: str, human_msg: str) -> BasePromptTemplate:
-        return InfoPrompterFactory.__get_chat_prompt_template(system_msg=system_msg, human_msg=human_msg)
+        return PrompterFactory.__get_chat_prompt_template(system_msg=system_msg, human_msg=human_msg)
 
     @classmethod
     def __get_chat_prompt_template(cls, system_msg: str, human_msg: str) -> ChatPromptTemplate:
