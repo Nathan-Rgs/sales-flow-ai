@@ -1,8 +1,9 @@
 from decouple import config
 from langchain_core.embeddings import Embeddings
 from langchain_openai import OpenAIEmbeddings
+from interface.embedding import EmbedderFactoryInterface
 
-class EmbedderFactory():
+class EmbedderFactory(EmbedderFactoryInterface):
     
     @classmethod
     def factory_embedder(cls) -> Embeddings:
