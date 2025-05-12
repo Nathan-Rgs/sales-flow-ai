@@ -10,4 +10,7 @@ class InfoEmbedderFactory():
 
     @classmethod
     def __get_openai_embedder(cls) -> OpenAIEmbeddings:
-        return OpenAIEmbeddings()
+        return OpenAIEmbeddings(
+            model=config("GPT_MODEL_EMBEDDING_NAME"),
+            api_key=config('GPT_MODEL_API_KEY')
+        )
