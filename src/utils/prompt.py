@@ -12,7 +12,12 @@ from typing import List
 class PrompterFactory(PrompterFactoryInterface):        
 
     @classmethod
-    def factory_prompter(cls, tag: str | None,  system_msg: str | None, human_msg: str | None) -> BasePromptTemplate:
+    def factory_prompter(
+        cls,
+        tag: str | None = None,
+        system_msg: str | None = None,
+        human_msg: str | None = None
+    ) -> BasePromptTemplate:
         if tag == None: return PrompterFactory.__get_prompt_template()
         else:
             if tag not in get_tags():

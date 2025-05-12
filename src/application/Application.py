@@ -1,18 +1,17 @@
-from classify.controller import ClassifierController
 from utils.common import get_tags
 from typing import List
 import controller
 
 class ApplicationRAG():
 
-    __controller_classifier: ClassifierController
+    __controller_classifier: controller.ClassifierController
     __controller_price: controller.PriceController
     __controller_info: controller.InfoController
     __controller_smalltalk: controller.SmalltalkController
     __tags = List[str]
 
     def __init__(self):
-        self.__controller_classifier = ClassifierController()
+        self.__controller_classifier = controller.ClassifierController()
         self.__controller_price = controller.PriceController()
         self.__controller_info = controller.InfoController()
         self.__controller_smalltalk = controller.SmalltalkController()
