@@ -4,8 +4,9 @@ from langchain_core.prompts import (
     HumanMessagePromptTemplate
 )
 from langchain_core.prompts.base import BasePromptTemplate
+from interface.prompt import PrompterFactoryInterface
 
-class PrompterFactory():        
+class PrompterFactory(PrompterFactoryInterface):        
 
     @classmethod
     def factory_prompter(cls, system_msg: str, human_msg: str) -> BasePromptTemplate:
