@@ -1,4 +1,4 @@
-from model.factory import ModelFactory
+from utils.model import ModelFactory
 from classify.model import ClassifierModel
 from classify.prompt import ClassifierPrompterFactory
 from langchain_core.runnables.base import RunnableSerializable
