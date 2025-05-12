@@ -4,7 +4,7 @@ from classify.prompt import ClassifierPrompterFactory
 from langchain_core.runnables.base import RunnableSerializable
 from typing import Dict, Literal
 
-class ClassifyController():
+class ClassifierController():
     __chain: RunnableSerializable
 
     def __init__(self):
