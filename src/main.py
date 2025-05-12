@@ -1,8 +1,10 @@
 from application.Application import ApplicationRAG
+from log.setup import setup_logging
 from uuid import uuid4
 import asyncio
 
 APP = ApplicationRAG()
+setup_logging()
 
 if __name__ == "__main__":
     session = str(uuid4())
@@ -11,4 +13,5 @@ if __name__ == "__main__":
 
     while True:
         task = APP.run(input=input("Send me a message:"), session_id=session)
-        tag = loop.run_until_complete(asyncio.gather(task))
+        response = loop.run_until_complete(asyncio.gather(task))
+        print(response)
