@@ -1,5 +1,5 @@
 from utils.model import ModelFactory
-from classify.model import ClassifierModel
+from model.classifier import ClassifierModel
 from utils.prompt import PrompterFactory
 from langchain_core.runnables.base import RunnableSerializable
 from typing import Dict, Literal
