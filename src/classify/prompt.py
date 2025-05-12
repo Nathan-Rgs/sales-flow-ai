@@ -3,12 +3,16 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.prompts.base import BasePromptTemplate
 from typing import List
 
-class ClassifyPrompter():
-    templater: BasePromptTemplate
+class ClassifierPrompterFactory():
 
-    def __init__(self):
+    @classmethod
+    def factory_prompter(cls) -> BasePromptTemplate:
+        return ClassifierPrompterFactory.__get_chat_prompt_template()
+
+    @classmethod
+    def __get_chat_prompt_template(cls) -> PromptTemplate:
         tags: List[str] = get_tags()
-        self.templater = PromptTemplate(
+        return PromptTemplate(
             input_variables=["input"],
             template=f"""
             Classifique a mensagem em exatamente uma destas categorias:
@@ -21,6 +25,3 @@ class ClassifyPrompter():
             Mensagem: {{input}}
             """
         )
-
-    def get_templater(self) -> BasePromptTemplate:
-        return self.templater

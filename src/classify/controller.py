@@ -1,16 +1,14 @@
 from model.factory import ModelFactory
 from classify.model import ClassifierModel
-from classify.prompt import ClassifyPrompter
+from classify.prompt import ClassifierPrompterFactory
 from langchain_core.runnables.base import RunnableSerializable
 from typing import Dict, Literal
 
 class ClassifyController():
-    __classify_prompter: ClassifyPrompter
     __chain: RunnableSerializable
 
     def __init__(self):
-        self.__classify_prompter = ClassifyPrompter()
-        self.__chain: RunnableSerializable = self.__classify_prompter.get_templater() | ModelFactory.connect_factory(
+        self.__chain: RunnableSerializable = ClassifierPrompterFactory().factory_prompter() | ModelFactory.connect_factory(
             temperature=0.0, schema=ClassifierModel
         )
 
