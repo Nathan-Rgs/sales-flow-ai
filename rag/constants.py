@@ -6,12 +6,12 @@ load_dotenv()
 OLLAMA_URL       = os.getenv("OLLAMA_URL", "http://localhost:11434")
 EMBEDDINGS_MODEL = os.getenv("EMBEDDINGS_MODEL", "text-embedding-3-small")
 LLM_MODEL        = os.getenv("LLM_MODEL", "gpt-4o-mini")
-DOCS_PATH = os.getenv("LLM_MODEL", "./preprocessing/knowledge-base")
-PERSIST_DIR      = os.getenv("PERSIST_DIR", "vectorized-knowledge-bases/base-faiss")  
+DOCS_PATH        = os.getenv("LLM_MODEL", "./data/raw")
+PERSIST_DIR      = os.getenv("PERSIST_DIR", "./data/faiss")  
 CHUNK_SIZE       = int(os.getenv("CHUNK_SIZE", 1000))
 CHUNK_OVERLAP    = int(os.getenv("CHUNK_OVERLAP", 200))
 
-API_KEY = os.getenv("API_KEY", "sk-")
+API_KEY = os.getenv("API_KEY", "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")
 
 GENERIC_SYSTEM_PROMPT = """
 Você é um assistente de vendas da JVF Máquinas, especializado em mandriladoras portáteis para reparos em campo.

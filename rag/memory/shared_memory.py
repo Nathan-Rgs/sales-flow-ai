@@ -5,7 +5,7 @@ from pathlib import Path
 from langchain_community.chat_message_histories import FileChatMessageHistory
 
 def shared_history(session_id: str):
-  folder = Path("rag/memory/history/global")
+  folder = Path("./data/memory")
   folder.mkdir(parents=True, exist_ok=True)
 
   path = folder / f"{session_id}.json"

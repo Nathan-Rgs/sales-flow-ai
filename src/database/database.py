@@ -1,11 +1,11 @@
 from decouple import config
-from info.embedding import InfoEmbedderFactory
+from price.embedding import PriceEmbedderFactory
 from langchain_chroma.vectorstores import Chroma
 from langchain_community.vectorstores import FAISS
 from langchain_core.vectorstores import VectorStore, VectorStoreRetriever
 from langchain_core.retrievers import BaseRetriever
 
-class InfoDatabase():
+class Database():
 
     __db: VectorStore
     __retriver: BaseRetriever
@@ -22,12 +22,12 @@ class InfoDatabase():
     def __connect_chroma(self) -> Chroma:
         return Chroma(
             persist_directory=config('DATABASE_FOLDER_PATH'),
-            embedding_function=InfoEmbedderFactory().factory_embedder()
+            embedding_function=PriceEmbedderFactory().factory_embedder()
         )
 
     def __connect_faiss(self) -> Chroma:
         return FAISS.load_local(
             folder_path=config('DATABASE_FOLDER_PATH'),
-            embeddings=InfoEmbedderFactory().factory_embedder(),
+            embeddings=PriceEmbedderFactory().factory_embedder(),
             allow_dangerous_deserialization=True,
         )
