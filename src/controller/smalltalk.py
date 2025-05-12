@@ -4,6 +4,7 @@ from utils.model import ModelFactory
 from utils.prompt import PrompterFactory
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.runnables import Runnable, RunnableWithMessageHistory
+from logging import getLogger, Logger
 from interface.controller import InfoController
 from utils.shared_memory import get_shared_history
 
@@ -11,8 +12,10 @@ class SmalltalkController(InfoController):
 
     __model: BaseChatModel
     __chain: Runnable
+    __logger: Logger
 
     def __init__(self):
+        self.__logger = getLogger('root')
         self.__model = ModelFactory().connect_factory(temperature=0.0)
         self.__init_chain()
 
@@ -34,6 +37,7 @@ class SmalltalkController(InfoController):
         )
 
     async def get_response(self, input: str, session_id: str) ->  str:
+        self.__logger.info("Invoking response from Smalltalk Chain")
         result = await self.__chain.ainvoke(
             input={"input": input},
             config={"configurable": {"session_id": session_id}}
@@ -41,6 +45,7 @@ class SmalltalkController(InfoController):
         return self.__process_response(msg=result)
 
     def __process_response(self, msg) -> str:
+        self.__logger.info("Processing response from Smalltalk Chain")
         if isinstance(msg, dict):
             if "answer" in msg: return msg["answer"]
             return msg.get("response") or next(iter(msg.values()), None)
