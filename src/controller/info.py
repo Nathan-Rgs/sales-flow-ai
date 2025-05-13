@@ -7,10 +7,10 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.runnables import Runnable, RunnableWithMessageHistory
 from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
 from logging import getLogger, Logger
-from interface.controller import InfoController
+from interface.controller import InfoControllerInterface
 from utils.shared_memory import get_shared_history
 
-class InfoController(InfoController):
+class InfoController(InfoControllerInterface):
 
     __db: Database
     __model: BaseChatModel
@@ -36,6 +36,7 @@ class InfoController(InfoController):
             """
         )
         refine_prompt = PrompterFactory().factory_prompter(
+            tag='info',
             system_msg=get_prompt_from_file(config('PROMPT_GENERIC_FOLDER_PATH')),
             human_msg="""
                 Histórico da conversa:\n\n{chat_history}\n
@@ -62,7 +63,7 @@ class InfoController(InfoController):
             history_messages_key="chat_history",
         )
 
-    async def get_response(self, input: str, session_id: str) ->  str:
+    async def get_response(self, input: str, session_id: str) -> str:
         self.__logger.info("Invoking response from Info Chain")
         result = await self.__chain.ainvoke(
             input={"question": input},
