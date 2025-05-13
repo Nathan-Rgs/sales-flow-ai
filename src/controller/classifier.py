@@ -1,5 +1,5 @@
 from utils.llm import LLMFactory
-from model.classifier import ClassifierModel
+from model import ClassifierModel
 from utils.prompt import PrompterFactory
 from interface.controller import InfoControllerInterface
 from langchain_core.runnables.base import RunnableSerializable
