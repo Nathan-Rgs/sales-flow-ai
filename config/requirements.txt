@@ -1,15 +1,11 @@
 # Environment
 python-decouple==3.8
 
-# File Manipulation
-PyPDF2==3.0.1
-python-docx==1.1.2
-
 # Interface Framework
 gradio==5.28.0
 gradio_client==1.10.0
 
-# LangChain Modules
+# LangChain Framework
 langchain==0.3.24
 langchain-chroma==0.2.3
 langchain-community==0.3.23
@@ -18,7 +14,7 @@ langchain-ollama==0.3.2
 langchain-openai==0.3.15
 langchain-text-splitters==0.3.8
 langsmith==0.3.39
-langchain_openai
+langchain-openai==0.3.15
 
 # Embedding Models
 faiss-cpu==1.11.0
