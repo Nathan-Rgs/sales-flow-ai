@@ -36,6 +36,7 @@ class InfoController(InfoControllerInterface):
             """
         )
         refine_prompt = PrompterFactory().factory_prompter(
+            tag='info',
             system_msg=get_prompt_from_file(config('PROMPT_GENERIC_FOLDER_PATH')),
             human_msg="""
                 Histórico da conversa:\n\n{chat_history}\n
