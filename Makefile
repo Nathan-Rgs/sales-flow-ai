@@ -4,9 +4,12 @@ help:
 	@echo ""
 	@echo ========== HELP ==========
 	@echo ""
-	@echo Setup the Sales Flow RAG application
+	@echo Setup the Sales Flow RAG Application
 	@echo To install: make install
+	@echo To build: make build
 	@echo To help: make
+	@echo Tip: before run, you must the local config and environment variables files
+	@echo Tip: Install first, Build after
 	@echo ""
 	@echo ==========================
 	@echo ""
