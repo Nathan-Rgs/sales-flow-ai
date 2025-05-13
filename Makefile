@@ -24,3 +24,5 @@ build:
 	./.venv/bin/pip install -r ./config/requirements.txt
 	@mkdir ./logs
 	@mkdir ./data
+	@mkdir ./data/memory
+	@mkdir ./data/faiss
