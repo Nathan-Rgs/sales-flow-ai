@@ -1,4 +1,4 @@
-from utils.model import ModelFactory
+from utils.llm import LLMFactory
 from model.classifier import ClassifierModel
 from utils.prompt import PrompterFactory
 from interface.controller import InfoControllerInterface
@@ -12,7 +12,7 @@ class ClassifierController(InfoControllerInterface):
 
     def __init__(self):
         self.__logger = getLogger('root')
-        self.__chain: RunnableSerializable = PrompterFactory().factory_prompter() | ModelFactory.connect_factory(
+        self.__chain: RunnableSerializable = PrompterFactory().factory_prompter() | LLMFactory().connect_factory(
             temperature=0.0, schema=ClassifierModel
         )
 

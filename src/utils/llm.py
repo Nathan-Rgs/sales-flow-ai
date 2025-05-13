@@ -5,11 +5,11 @@ from langchain_openai import ChatOpenAI
 from interface.model import ModelFactoryInterface
 from pydantic import BaseModel
 
-class ModelFactory(ModelFactoryInterface):
+class LLMFactory(ModelFactoryInterface):
 
     @classmethod
     def connect_factory(cls, temperature: float, schema: BaseModel | None = None) -> BaseChatModel:
-        return ModelFactory.__connect_cloud_gpt(temperature=temperature, schema=schema)
+        return LLMFactory.__connect_cloud_gpt(temperature=temperature, schema=schema)
 
     @classmethod
     def __connect_local_ollama(cls, temperature: float, schema: BaseModel | None = None) -> ChatOllama:

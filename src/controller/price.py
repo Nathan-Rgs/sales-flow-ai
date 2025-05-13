@@ -1,6 +1,6 @@
 from utils.common import get_prompt_from_file
 from decouple import config
-from utils.model import ModelFactory
+from utils.llm import LLMFactory
 from utils.prompt import PrompterFactory
 from utils.database import Database
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -19,7 +19,7 @@ class PriceController(InfoControllerInterface):
 
     def __init__(self):
         self.__logger = getLogger('root')
-        self.__model = ModelFactory().connect_factory(temperature=0.0)
+        self.__model = LLMFactory().connect_factory(temperature=0.0)
         self.__db = Database()
         self.__db.connect_database()
         self.__db.init_retreiver()
