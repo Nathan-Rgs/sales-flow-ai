@@ -3,8 +3,6 @@ from chains.price      import price_chain
 from chains.info       import info_chain
 from chains.smalltalk  import smalltalk_chain
 
-from langchain.memory import FileChatMessageHistory, ConversationBufferMemory
-
 # Configuração de cada intent
 _dispatch_map = {
     "price": {

@@ -13,7 +13,7 @@ from langchain_core.runnables import RunnableWithMessageHistory
 
 smalltalk_llm = ChatOpenAI(
     model=LLM_MODEL,
-    temperature=0.6,
+    temperature=0.45,
     streaming=False,
     api_key=API_KEY,
 )
