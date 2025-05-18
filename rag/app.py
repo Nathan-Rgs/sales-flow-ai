@@ -26,7 +26,7 @@ if __name__ == "__main__":
     with gr.Blocks() as demo:
         gr.Markdown("""
         ## Assistente de Vendas JVF Máquinas  
-        * Posso te ajudar com informações sobre nossas mandriladoras e atendimento técnico.*
+        * Posso te ajudar com informações sobre nossas mandriladoras e atendimento técnico.
         """)
         chatbot      = gr.Chatbot()
         session_state = gr.State(None)
