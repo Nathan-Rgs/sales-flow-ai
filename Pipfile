@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+python-decouple = "==3.8"
+pipenv = "==2025.0.3"
+gradio = "==5.28.0"
+gradio-client = "==1.10.0"
+langchain = "==0.3.24"
+langchain-chroma = "==0.2.3"
+langchain-community = "==0.3.23"
+langchain-core = "==0.3.56"
+langchain-ollama = "==0.3.2"
+langchain-text-splitters = "==0.3.8"
+langsmith = "==0.3.39"
+langchain-openai = "==0.3.15"
+faiss-cpu = "==1.11.0"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"
