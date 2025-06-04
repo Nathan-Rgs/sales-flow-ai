@@ -1,5 +1,6 @@
 # Environment
 python-decouple==3.8
+pipenv==2025.0.3
 
 # Interface Framework
 gradio==5.28.0
