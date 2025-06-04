@@ -36,7 +36,7 @@ class ApplicationRAG():
             self.__logger.info("Something get wrong in generating response for user")
             return 'erro'
         self.__logger.info("Sending response for user prompt")
-        return result
+        return str(result)
 
     def __is_valid_input(self, input: str) -> bool:
         if len(input) < 1:
