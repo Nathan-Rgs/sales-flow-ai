@@ -80,62 +80,6 @@ OPENAI_API_KEY=seu_token_aqui
 VECTORSTORE_PATH=.vectorstore
 ```
 
-### Carregar documentos
-
-```bash
-python scripts/etl_load_documents.py data/raw/*.pdf
-```
-
----
-
-## ▶️ Execução
-
-```bash
-uvicorn app.main:app --reload
-```
-
-A interface de chat estará em `http://localhost:8000/chat`.
-
-### Com Docker
-
-```bash
-docker compose up --build
-```
-
----
-
-## 🧪 Testes
-
-```bash
-pytest -q
-```
-
----
-
-## 📂 Estrutura de diretórios
-
-```
-.
-├── app/                 # FastAPI + LangChain integration
-│   ├── routers/
-│   ├── services/
-│   └── core/
-├── data/                # Documentos fonte
-├── scripts/             # ETL, manutenção de vetorstore
-├── docs/                # Diagramas, artigos e slides
-└── tests/
-```
-
----
-
-## 🤝 Contribuindo
-
-1. Faça um fork e crie sua branch (`git checkout -b feature/minha-feature`)  
-2. Commit suas alterações (`git commit -m 'feat: Minha feature'`)  
-3. Envie um *pull request*
-
----
-
 ## 📄 Licença
 
 Distribuído sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
